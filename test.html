@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>Supabase Storage Upload Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <h1>Supabase Storage Upload Test</h1>
+    <p>テスト用の画像ファイルを選択して、アップロードボタンを押してください。</p>
+    <input type="file" id="fileInput">
+    <button onclick="uploadTest()">アップロードテスト</button>
+
+    <script>
+        // ▼▼▼ ここをあなたの値に書き換えてください ▼▼▼
+        const SUPABASE_URL ="https://ynjrlcanaalpncmbqzgy.supabase.co";
+        const SUPABASE_ANON_KEY ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InluanJsY2FuYWFscG5jbWJxemd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1Mjg2NjEsImV4cCI6MjA2NTEwNDY2MX0.fWq0IkvZv757VzF0xe3Q-zJinfofTr6A5e-O0NDKZc8";
+        // ▲▲▲ ここまで ▲▲▲
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function uploadTest() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                console.error("ファイルが選択されていません。");
+                alert("ファイルを選択してください。");
+                return;
+            }
+
+            const fileName = `test-${Date.now()}.${file.name.split('.').pop()}`;
+            console.log(`アップロードを試みます: ${fileName}`);
+
+            try {
+                const { data, error } = await supabase.storage
+                    .from('avatars')
+                    .upload(fileName, file);
+
+                if (error) {
+                    console.error("アップロードエラー:", error);
+                    alert(`エラーが発生しました: ${error.message}`);
+                } else {
+                    console.log("アップロード成功！:", data);
+                    alert("アップロードに成功しました！");
+                }
+            } catch (e) {
+                console.error("予期せぬエラー:", e);
+                alert("予期せぬエラーが発生しました。");
+            }
+        }
+    </script>
+</body>
+</html>
